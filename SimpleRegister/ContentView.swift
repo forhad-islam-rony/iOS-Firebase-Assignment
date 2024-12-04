@@ -112,3 +112,66 @@ struct ContentView: View {
             }
         }
     }
+
+
+
+
+    // Custom input field
+    @ViewBuilder
+    func inputField(title: String, placeholder: String, text: Binding<String>, isSecure: Bool = false) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .foregroundColor(.gray)
+                .font(.headline)
+
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(LinearGradient(colors: [.white, .white.opacity(0.9)],
+                                         startPoint: .topLeading,
+                                         endPoint: .bottomTrailing))
+                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 4)
+
+                if isSecure {
+                    SecureField(placeholder, text: text)
+                        .padding()
+                        .foregroundColor(.black)
+                } else {
+                    TextField(placeholder, text: text)
+                        .padding()
+                        .foregroundColor(.black)
+                }
+            }
+            .frame(height: 50)
+        }
+    }
+
+    func login() {
+        Auth.auth().signIn(withEmail: email, password: password) { result, error in
+            if let error = error {
+                errorMessage = error.localizedDescription
+                print("Login error: \(error.localizedDescription)")  // For debugging
+            } else {
+                userIsLoggedIn = true
+                errorMessage = ""  // Clear any error message on successful login
+            }
+        }
+    }
+
+    func register() {
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            if let error = error {
+                errorMessage = error.localizedDescription
+                print("Registration error: \(error.localizedDescription)")  // For debugging
+            } else {
+                userIsLoggedIn = true
+                errorMessage = ""  // Clear any error message on successful registration
+            }
+        }
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
